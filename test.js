@@ -10,7 +10,6 @@ var fails = function(type, opts, cb, msg) {
 }
 
 describe(pkg.name, function() {
-
   it('should fail if opts is not an object', function() {
     [undefined, null, 42, 'opts'].forEach(function(value) {
       fails(TypeError, value, undefined, 'opts must be an object')
@@ -56,15 +55,15 @@ describe(pkg.name, function() {
     })
   })
 
-  it('should fail if getDest is not a boolean', function() {
-    [undefined, null, 42, 'getDest'].forEach(function(value) {
+  it('should fail if getDestName is not a boolean', function() {
+    [undefined, null, 42, 'getDestName'].forEach(function(value) {
       fails(TypeError, {
         targets: [],
         dir: '.',
         archive: false,
         getUrl: function() {},
-        getDest: value
-      }, cb, 'getDest must be a function')
+        getDestName: value
+      }, cb, 'getDestName must be a function')
     })
   })
 })

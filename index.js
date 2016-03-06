@@ -7,20 +7,28 @@ var request = require('request')
 var fs = require('fs')
 var _ = require('lodash')
 
-var getPath = function(opts, target) {
-  return path.join(opts.dir, opts.getDest(target))
+var getDestDir = function(opts, target) {
+  if (opts.archive) {
+    return opts.dir
+  }
+  return path.join(opts.dir, target)
+}
+
+var getDestPath = function(opts, target) {
+  return path.join(getDestDir(opts, target), opts.getDestName(target))
 }
 
 var doDecompress = function(opts, target, cb) {
+  var targetPath = getDestPath(opts, target)
   new Decompress()
-    .src(getPath(opts, target))
-    .dest(opts.dir)
+    .src(targetPath)
+    .dest(getDestDir(opts, target))
     .use(Decompress.zip())
     .run(function(err, files) {
       if (err) {
         throw new Error(err)
       }
-      fs.unlink(getPath(opts, target))
+      fs.unlink(targetPath)
       cb(files.map(function(file) {
         return file.path
       }))
@@ -38,8 +46,8 @@ var doCollect = function(opts, target, downloads, files, cb) {
 }
 
 var doCreate = function(opts, target, downloads, cb) {
-  mkdirp(opts.dir, function() {
-    var destPath = getPath(opts, target)
+  mkdirp(getDestDir(opts, target), function() {
+    var destPath = getDestPath(opts, target)
     var out = fs.createWriteStream(destPath)
     out.on('finish', function() {
       if (opts.archive) {
@@ -74,7 +82,7 @@ var doDownload = function(opts, cb) {
   if (!_.isString(opts.dir)) throw TypeError('dir must be a string')
   if (!_.isBoolean(opts.archive)) throw TypeError('archive flag must be a boolean')
   if (!_.isFunction(opts.getUrl)) throw TypeError('getUrl must be a function')
-  if (!_.isFunction(opts.getDest)) throw TypeError('getDest must be a function')
+  if (!_.isFunction(opts.getDestName)) throw TypeError('getDestName must be a function')
   doCleanup(opts, cb)
 }
 

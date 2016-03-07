@@ -3,6 +3,7 @@ var download = require('./')
 var pkg = require('./package.json')
 
 var cb = function() {}
+var targets = ['linux-x64']
 
 var fails = function(type, opts, cb, msg) {
   var fn = download.bind(null, opts, cb)
@@ -28,16 +29,28 @@ describe(pkg.name, function() {
     })
   })
 
+  it('should fail if targets are not strings', function() {
+    [[undefined], [null], [42]].forEach(function(value) {
+      fails(TypeError, {targets: value}, cb, 'targets must be strings')
+    })
+  })
+
+  it('should fail if targets are not valid', function() {
+    [[''], ['target'], ['darwin-ia32']].forEach(function(value) {
+      fails(Error, {targets: value}, cb, 'targets must be valid')
+    })
+  })
+
   it('should fail if dir is not a string', function() {
-    [undefined, null, 42, []].forEach(function(value) {
-      fails(TypeError, {targets: [], dir: value}, cb, 'dir must be a string')
+    [undefined, null, 42, targets].forEach(function(value) {
+      fails(TypeError, {targets: targets, dir: value}, cb, 'dir must be a string')
     })
   })
 
   it('should fail if archive is not a boolean', function() {
     [undefined, null, 42, 'archive'].forEach(function(value) {
       fails(TypeError, {
-        targets: [],
+        targets: targets,
         dir: '.',
         archive: value
       }, cb, 'archive flag must be a boolean')
@@ -47,7 +60,7 @@ describe(pkg.name, function() {
   it('should fail if getUrl is not a boolean', function() {
     [undefined, null, 42, 'getUrl'].forEach(function(value) {
       fails(TypeError, {
-        targets: [],
+        targets: targets,
         dir: '.',
         archive: false,
         getUrl: value
@@ -58,7 +71,7 @@ describe(pkg.name, function() {
   it('should fail if getDestName is not a boolean', function() {
     [undefined, null, 42, 'getDestName'].forEach(function(value) {
       fails(TypeError, {
-        targets: [],
+        targets: targets,
         dir: '.',
         archive: false,
         getUrl: function() {},

@@ -7,6 +7,20 @@ var request = require('request')
 var fs = require('fs')
 var _ = require('lodash')
 
+var validTargets = [
+  'linux-ia32',
+  'linux-x64',
+  'win32-ia32',
+  'win32-x64',
+  'darwin-x64'
+]
+
+var isValidTarget = function(target) {
+  return _.findIndex(validTargets, function(validTarget) {
+    return validTarget === target
+  }) > -1
+}
+
 var getDestDir = function(opts, target) {
   if (opts.archive) {
     return opts.dir
@@ -79,6 +93,10 @@ var doDownload = function(opts, cb) {
   if (!_.isPlainObject(opts)) throw TypeError('opts must be an object')
   if (!_.isFunction(cb)) throw TypeError('cb must be a function')
   if (!_.isArrayLikeObject(opts.targets)) throw TypeError('targets must be an array')
+  opts.targets.forEach(function(target) {
+    if (!_.isString(target)) throw TypeError('targets must be strings')
+    if (!isValidTarget(target)) throw Error('targets must be valid')
+  })
   if (!_.isString(opts.dir)) throw TypeError('dir must be a string')
   if (!_.isBoolean(opts.archive)) throw TypeError('archive flag must be a boolean')
   if (!_.isFunction(opts.getUrl)) throw TypeError('getUrl must be a function')

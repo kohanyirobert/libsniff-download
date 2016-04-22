@@ -1,6 +1,5 @@
 var accum = require('accum')
 var assert = require('chai').assert
-var sinon = require('sinon')
 var urldl = require('../lib/urldl')
 
 describe('urldl.js', function() {

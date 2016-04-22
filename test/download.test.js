@@ -121,14 +121,14 @@ describe('download.js', function() {
 
       this.assertDownloads = function(done) {
         return function(downloads) {
-          assert.equal(targets.length, downloads.length)
+          assert(targets.length === downloads.length)
           targets.forEach(function(target) {
             var download = downloads.find(function(download) {
               return download.target === target
             })
-            assert.equal(download.files.length, 1)
+            assert(download.files.length === 1)
             download.files.forEach(function(file) {
-              assert.equal(file, path.resolve(path.join(self.tmpobj.name, target, 'binary')))
+              assert(file === path.resolve(path.join(self.tmpobj.name, target, 'binary')))
             })
           })
           done()
